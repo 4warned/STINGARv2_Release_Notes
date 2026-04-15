@@ -1,5 +1,7 @@
 # STINGAR release notes
 
+**Canonical published copy on GitHub:** [4warned/STINGARv2_Release_Notes](https://github.com/4warned/STINGARv2_Release_Notes) (`main`). Use that repository as the basis for all future customer-facing releases; filenames follow `RELEASE_NOTES_<major.minor.patch>.md` (dotted semver, e.g. `RELEASE_NOTES_2.2.2.md`).
+
 This repository publishes **release notes** for the STINGARv2 platform. Each document summarizes what changed in a version you may deploy: new capabilities, fixes, upgrade steps when they apply, and known limitations.
 
 ## Reading the notes

@@ -2,6 +2,8 @@
 STINGARv2.2.2 Release
 Improves web UI accessibility (WCAG 2.5 Level AA), mobile usability, and reliability of login and server-side configuration when credentials are supplied via `stingar.env`.
 
+**Published release notes (canonical):** [STINGARv2_Release_Notes on GitHub](https://github.com/4warned/STINGARv2_Release_Notes) — this file: [RELEASE_NOTES_2.2.2.md](https://github.com/4warned/STINGARv2_Release_Notes/blob/main/RELEASE_NOTES_2.2.2.md) (raw: `https://raw.githubusercontent.com/4warned/STINGARv2_Release_Notes/main/RELEASE_NOTES_2.2.2.md`).
+
 ### Upgrade Steps
 
 * [ACTION REQUIRED]
