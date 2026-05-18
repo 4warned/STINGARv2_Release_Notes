@@ -1,6 +1,6 @@
 # STINGAR v2.3 Release Notes
 
-**Release Date:** April 2026
+**Release Date:** May 2026
 
 STINGAR v2.3 introduces IDS/IPS rules generation from honeypot sessions, improved Attack Analysis with IP/CIDR search and host:port display, dashboard UX improvements, and enhanced update notifications.
 
@@ -17,7 +17,7 @@ STINGAR v2.3 introduces IDS/IPS rules generation from honeypot sessions, improve
 
 ## Breaking Changes
 
-None. This release is backward compatible with v2.2.1.
+None. This release is backward compatible with v2.2.2.
 
 ---
 
