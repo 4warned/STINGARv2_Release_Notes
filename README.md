@@ -22,3 +22,5 @@ Refer to the usual STINGAR user documentation, Slack channel, or Forewarned's we
 2.0 STINGARv2 - using Docker / API / Ansible / StingarUI implementation
 2.1 STINGARv2.1 - Updates on UI Attack Analysis, Honeypot state management (start/stop/delete), & more honeypot implementations
 2.2 STINGARv2.2 - Update with support for new Honeypot App Store honeypot image collection
+2.3 STINGARv2.3 - IDS/IPS Rules (Suricata/Snort), Attack Analysis search, dashboard UX
+2.4 STINGARv2.4 - Zeek/JA4 IDS output, honeypot de-fingerprinting, Docker/Podman (sensors + RHEL admin), LDAP login, deployment delete
