@@ -2,7 +2,8 @@
 
 **Release Date:** July 2026
 
-STINGAR v2.4 extends IDS/IPS Rules with a Zeek notice-policy output format, adds JA4 and JA4H fingerprint rules alongside existing HASSH and JA3 support, and defaults Dionaea deployments to publish HTTPS on port 443 for TLS fingerprint capture. The v2.4 honeypot images also add per-sensor de-fingerprinting (Conpot and Cowrie) and TLS client fingerprint capture, making sensors harder for ICS and SSH scanners to identify and clustering scanner activity by JA3/JA4. Honeypot deployment supports both Docker and Podman on remote sensor hosts (automatic runtime selection via Langstroth). The STINGAR **admin server** can be installed on RedHat-family Linux (RHEL 8/9, Rocky, AlmaLinux) using Podman and native `podman compose`, with an OS-aware quickstart installer and updated installation documentation. **Also in this release:** optional **LDAP / Active Directory login** for the UI (LDAPS bind; users must still exist in STINGAR User Management), and a **Delete** control for honeypot deployments in the UI.
+STINGAR v2.4 extends IDS/IPS Rules with a Zeek notice-policy output format, adds JA4 and JA4H fingerprint rules alongside existing HASSH and JA3 support, and defaults honeypot deployments for TLS fingerprint capture. The v2.4 honeypot images also add per-sensor de-fingerprinting (Conpot and Cowrie) and TLS client fingerprint capture, making sensors harder for ICS and SSH scanners to identify and clustering scanner activity. 
+Honeypot deployment supports both Docker and Podman on remote sensor hosts (automatic runtime selection via Ansible playbook). The STINGAR **admin server** can be installed on RedHat-family Linux (RHEL 8/9, Rocky, AlmaLinux) using Podman and native `podman compose`, with an OS-aware quickstart installer and updated installation documentation. **Also in this release:** updated **LDAP / Active Directory login** for the UI (LDAPS bind; users must still exist in STINGAR User Management), and a **Delete** control for old honeypot deployments in the Manage Honeypots UI.
 
 ---
 
@@ -14,8 +15,8 @@ STINGAR v2.4 extends IDS/IPS Rules with a Zeek notice-policy output format, adds
 - **RHEL / Rocky / AlmaLinux admin server:** clone [stingar-quickstart](https://github.com/4warned/stingar-quickstart), run `sudo ./scripts/install_prerequisites.sh`, then `python3 configure_stingar.py` and `./scripts/compose.sh up -d` (see Admin server — Podman install below)
 - On Podman admin installs, plan for **manual upgrades** (`./scripts/compose.sh pull && ./scripts/compose.sh up -d`); in-app auto-update remains disabled when `CONTAINER_RUNTIME=podman`
 - Pull the v2.4 honeypot images (e.g. `conpot:v2.4`, `cowrie:v2.4`, `dionaea:v2.4`) to pick up de-fingerprinting and TLS capture; per-sensor identities are generated on container start
-- [ACTION REQUIRED] The `conpot:v2.4` image was updated with the critical Modbus stability fix (see Bug Fixes). If you pulled an earlier `conpot:v2.4`, force a fresh pull (`docker compose pull conpot`) and recreate (`docker compose up -d --force-recreate conpot`); `docker compose up -d` alone reuses the cached tag
-- Re-deploy or refresh sensor configuration so Dionaea sensors receive the updated `443:443` port mapping
+- [ACTION REQUIRED] The `conpot:v2.4` image was updated with a Modbus stability fix (see Bug Fixes). If you pulled an earlier `conpot:` image, force a fresh pull (`docker compose pull conpot`) and recreate (`docker compose up -d --force-recreate conpot`); `docker compose up -d` alone reuses the cached tag
+- Re-deploy or refresh sensor configuration so any Dionaea sensors receive the updated `443:443` port mapping
 - For Zeek integration: install required Zeek packages on sensors before loading the generated script (see New Features)
 - **Optional — LDAP login:** set `LDAP_ENABLED=true` and the LDAP host/base (and optionally `LDAP_UID_ATTRIBUTE`) in `stingar.env` or **Settings → Environment Variables → LDAP Configuration**, then restart STINGAR so the **LDAP Login** button appears (see Configuration)
 - No new environment variables required for core features if you are not enabling LDAP
@@ -29,15 +30,6 @@ None. This release is backward compatible with v2.3.x.
 ---
 
 ## New Features
-
-### LDAP / institutional login
-
-- **LDAP Login button** – When `LDAP_ENABLED=true`, the login page shows an **LDAP Login** option alongside local Login
-- **LDAPS bind** – Apiarist authenticates against your directory over TLS (default port 636)
-- **Allowlisted STINGAR users** – Each person must already exist under User Management; LDAP supplies the password check against the directory (no local STINGAR password required for LDAP users)
-- **UID attribute** – `LDAP_UID_ATTRIBUTE` defaults to `uid`; set `sAMAccountName` for Active Directory
-- **Settings UI** – LDAP variables are editable under **Settings → Environment Variables → LDAP Configuration**
-- **Documentation** – User docs cover setup under Login / LDAP Login (`/docs/login_out/`)
 
 ### Honeypot deployments — Delete control
 
@@ -103,7 +95,17 @@ None. This release is backward compatible with v2.3.x.
 
 ## Bug Fixes
 
-- **Conpot Modbus stability (critical)** – Fixed a 100%-CPU stall where a single malformed Modbus/TCP connection (a frame that declares more bytes than it sends and then closes) pegged a CPU core and made the sensor stop responding on every port until restarted — one crafted packet could take a sensor offline. Verified on a live sensor: ~2,000 such connections keep CPU under 20% and recover to idle immediately.
+### LDAP / institutional login fixes for UI/API
+
+- **LDAP Login button** – When `LDAP_ENABLED=true`, the login page shows an **LDAP Login** option alongside local Login
+- **LDAPS bind** – API authenticates against your directory over TLS (default port 636)
+- **Allowlisted STINGAR users** – Each person must already exist under User Management; LDAP supplies the password check against the directory (no local STINGAR password required for LDAP users)
+- **UID attribute** – `LDAP_UID_ATTRIBUTE` defaults to `uid`; set `sAMAccountName` for Active Directory
+- **Settings UI** – LDAP variables are editable under **Settings → Environment Variables → LDAP Configuration**
+
+### Honeypot updates 
+
+- **Conpot Modbus stability** – Fixed a 100%-CPU stall where a single malformed Modbus/TCP connection (a frame that declares more bytes than it sends and then closes) pegged a CPU core and made the sensor stop responding on every port until restarted.
 - **Conpot FTP stability** – Fixed a related CPU-spin on the FTP command channel triggered by rapid connect/disconnect; connect/close scan floods no longer drive sustained CPU.
 - **Conpot scan resilience** – Suppressed scanner-driven traceback storms that could saturate CPU and make ports stop responding after Nmap-style scans (upstream Conpot issue #564); the listener now stays up through malformed-probe floods. Benign per-request Modbus rejection errors are demoted from ERROR to INFO.
 - **Conpot HTTP** – Added the missing `505` status page and quieted benign startup warnings and per-connection ENIP/cpppo log spam.
@@ -114,7 +116,7 @@ None. This release is backward compatible with v2.3.x.
 
 ---
 
-## Other Changes
+## Other Fixes
 
 - **UDP port mappings** – Foundation layer publishes UDP honeypot services with `/udp` Docker Compose port syntax where applicable
 - **HP App Store templates** – Compose and env templates from the store render correctly when deploying store honeypots
@@ -163,7 +165,7 @@ Validate with `zeek -b stingar-honeypot.zeek` after installing packages.
 
 - Existing deployments: update docker-compose to v2.4 tags after pull
 - IDS/IPS Rules: configure `format=zeek` feed URL in your Zeek deployment if using the auto-generated script
-- Dionaea sensors deployed before v2.4 may need a configuration refresh to pick up the default `443:443` mapping
+- Honeypots Conpot & Dionaea sensors deployed before v2.4 may need a configuration refresh to pick up the default `443:443` mapping
 - JA4 rules require Suricata 7+ or Snort 3 with JA4 keyword support
 - **LDAP:** leave `LDAP_ENABLED` unset or `false` to keep local-only login; enabling LDAP does not remove local Login
 - **Podman admin server:** in-app automated updates are not available in v2.4; use `./scripts/compose.sh pull` and `./scripts/compose.sh up -d` from the quickstart directory
