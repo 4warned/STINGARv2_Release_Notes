@@ -4,7 +4,7 @@
 
 ## Overview
 
-STINGAR v2.4.1 is a patch release that adds supported **syslog over TLS** for SIEM integrations (customer security hardening), and may include concurrent dependency/CVE fixes from the maintenance process.
+STINGAR v2.4.1 is a patch release that adds supported **syslog over TLS** for SIEM integrations (customer security hardening) and fixes HP App Store honeypot deploy template failures caused by double-encoded `hp_options` (empty/missing ports in generated compose/env).
 
 ## Upgrade Steps
 
@@ -30,7 +30,7 @@ STINGAR v2.4.1 is a patch release that adds supported **syslog over TLS** for SI
 
 ## Bug Fixes
 
-- (CVE / dependency fixes to be listed if shipped in the same tag)
+- **HP App Store deploy ports / templates** – Tolerate double-encoded `hp_options` from store deployments and stop re-encoding already-serialized options on deploy create. Fixes `'str' object has no attribute 'get'` during compose/env rendering and restores port mappings in generated honeypot templates for affected store honeypots.
 
 ## Configuration
 
